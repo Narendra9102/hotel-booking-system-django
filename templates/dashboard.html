@@ -1,0 +1,312 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Hotel Booking{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-header {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .dashboard-header h1 {
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .dashboard-header p {
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .stat-card.warning::before {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .stat-card.success::before {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .stat-card.info::before {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+
+    .stat-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .action-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+        text-decoration: none;
+        color: #333;
+    }
+
+    .action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .action-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .action-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .recent-bookings {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .recent-bookings h2 {
+        color: #333;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .booking-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background 0.3s;
+    }
+
+    .booking-item:last-child {
+        border-bottom: none;
+    }
+
+    .booking-item:hover {
+        background: #f8f9fa;
+    }
+
+    .booking-info {
+        flex: 1;
+    }
+
+    .booking-room {
+        font-weight: 600;
+        color: #333;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .booking-date {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .booking-status {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-confirmed {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-checked_in {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .status-checked_out {
+        background: #e2e3e5;
+        color: #383d41;
+    }
+
+    .status-cancelled {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #999;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .quick-actions {
+            grid-template-columns: 1fr;
+        }
+
+        .booking-item {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>Welcome back, {{ user.first_name }}! 👋</h1>
+    <p>Here's what's happening with your bookings today</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-number">{{ total_bookings }}</div>
+        <div class="stat-label">Total Bookings</div>
+    </div>
+
+    <div class="stat-card success">
+        <div class="stat-icon">✅</div>
+        <div class="stat-number">{{ upcoming_bookings }}</div>
+        <div class="stat-label">Upcoming</div>
+    </div>
+
+    <div class="stat-card info">
+        <div class="stat-icon">🏨</div>
+        <div class="stat-number">{{ active_bookings }}</div>
+        <div class="stat-label">Active Now</div>
+    </div>
+
+    <div class="stat-card warning">
+        <div class="stat-icon">📅</div>
+        <div class="stat-number">{{ past_bookings }}</div>
+        <div class="stat-label">Completed</div>
+    </div>
+</div>
+
+<div class="quick-actions">
+    <a href="{% url 'rooms' %}" class="action-card">
+        <div class="action-icon">🔍</div>
+        <div class="action-title">Browse Rooms</div>
+    </a>
+
+    <a href="{% url 'my_bookings' %}" class="action-card">
+        <div class="action-icon">📋</div>
+        <div class="action-title">My Bookings</div>
+    </a>
+
+    <a href="{% url 'rooms' %}" class="action-card">
+        <div class="action-icon">➕</div>
+        <div class="action-title">New Booking</div>
+    </a>
+
+    <a href="{% url 'profile' %}" class="action-card">
+        <div class="action-icon">⚙️</div>
+        <div class="action-title">Settings</div>
+    </a>
+</div>
+
+<div class="recent-bookings">
+    <h2>Recent Bookings</h2>
+    
+    {% if recent_bookings %}
+        {% for booking in recent_bookings %}
+        <div class="booking-item">
+            <div class="booking-info">
+                <div class="booking-room">
+                    🏨 Room {{ booking.room.room_number }} - {{ booking.room.get_room_type_display }}
+                </div>
+                <div class="booking-date">
+                    📅 {{ booking.start_time|date:"M d, Y" }} at {{ booking.start_time|time:"h:i A" }}
+                </div>
+            </div>
+            <span class="booking-status status-{{ booking.status }}">
+                {{ booking.get_status_display }}
+            </span>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <p>No bookings yet. Start by browsing available rooms!</p>
+            <a href="{% url 'rooms' %}" class="btn btn-primary" style="margin-top: 1rem;">Browse Rooms</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Hotel Booking{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 200px);
+        padding: 2rem 0;
+    }
+
+    .auth-card {
+        background: white;
+        padding: 3rem;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        width: 100%;
+        max-width: 500px;
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .auth-card h2 {
+        color: #333;
+        margin-bottom: 0.5rem;
+        font-size: 2rem;
+        text-align: center;
+    }
+
+    .auth-card .subtitle {
+        color: #666;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #333;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-control.error {
+        border-color: #e74c3c;
+    }
+
+    .error-message {
+        color: #e74c3c;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
+
+    .form-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .form-footer a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .form-footer a:hover {
+        text-decoration: underline;
+    }
+
+    .btn-full {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1.1rem;
+        margin-top: 1rem;
+    }
+
+    .icon {
+        font-size: 3rem;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="icon">📝</div>
+        <h2>Create Account</h2>
+        <p class="subtitle">Join us today and start booking!</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="username">Username *</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    class="form-control {% if form.username.errors %}error{% endif %}"
+                    placeholder="Choose a username"
+                    value="{{ form.username.value|default:'' }}"
+                    required
+                    autofocus
+                >
+                {% if form.username.errors %}
+                    <div class="error-message">{{ form.username.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    class="form-control {% if form.email.errors %}error{% endif %}"
+                    placeholder="your.email@example.com"
+                    value="{{ form.email.value|default:'' }}"
+                    required
+                >
+                {% if form.email.errors %}
+                    <div class="error-message">{{ form.email.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="first_name">First Name *</label>
+                    <input 
+                        type="text" 
+                        id="first_name" 
+                        name="first_name" 
+                        class="form-control {% if form.first_name.errors %}error{% endif %}"
+                        placeholder="John"
+                        value="{{ form.first_name.value|default:'' }}"
+                        required
+                    >
+                    {% if form.first_name.errors %}
+                        <div class="error-message">{{ form.first_name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="last_name">Last Name *</label>
+                    <input 
+                        type="text" 
+                        id="last_name" 
+                        name="last_name" 
+                        class="form-control {% if form.last_name.errors %}error{% endif %}"
+                        placeholder="Doe"
+                        value="{{ form.last_name.value|default:'' }}"
+                        required
+                    >
+                    {% if form.last_name.errors %}
+                        <div class="error-message">{{ form.last_name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password1">Password *</label>
+                <input 
+                    type="password" 
+                    id="password1" 
+                    name="password1" 
+                    class="form-control {% if form.password1.errors %}error{% endif %}"
+                    placeholder="Create a strong password"
+                    required
+                >
+                {% if form.password1.errors %}
+                    <div class="error-message">{{ form.password1.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="password2">Confirm Password *</label>
+                <input 
+                    type="password" 
+                    id="password2" 
+                    name="password2" 
+                    class="form-control {% if form.password2.errors %}error{% endif %}"
+                    placeholder="Re-enter your password"
+                    required
+                >
+                {% if form.password2.errors %}
+                    <div class="error-message">{{ form.password2.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            {% if form.non_field_errors %}
+                <div class="error-message" style="text-align: center; margin-bottom: 1rem;">
+                    {{ form.non_field_errors.0 }}
+                </div>
+            {% endif %}
+
+            <button type="submit" class="btn btn-primary btn-full">
+                Create Account
+            </button>
+
+            <div class="form-footer">
+                Already have an account? <a href="{% url 'login' %}">Login here</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

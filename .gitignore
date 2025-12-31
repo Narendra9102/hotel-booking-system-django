@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+env/
+venv/
+ENV/
+
+
+# Django
+*.log
+media/
+staticfiles/
+
+
+# Environment variables
+.env
+.env.local

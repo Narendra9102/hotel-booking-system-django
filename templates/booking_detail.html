@@ -1,0 +1,350 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking #{{ booking.id }} - Hotel Booking{% endblock %}
+
+{% block extra_css %}
+<style>
+    .booking-detail-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .booking-header-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-left h1 {
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .header-left p {
+        color: #666;
+    }
+
+    .booking-status-badge {
+        padding: 1rem 2rem;
+        border-radius: 25px;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .detail-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .detail-card h3 {
+        color: #333;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .detail-item {
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+    }
+
+    .detail-label {
+        color: #666;
+        font-weight: 600;
+    }
+
+    .detail-value {
+        color: #333;
+        text-align: right;
+    }
+
+    .timeline {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        margin-bottom: 1.5rem;
+    }
+
+    .timeline h3 {
+        color: #333;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .timeline-item {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .timeline-item:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 35px;
+        width: 2px;
+        height: calc(100% - 20px);
+        background: #e0e0e0;
+    }
+
+    .timeline-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+
+    .timeline-content {
+        flex: 1;
+    }
+
+    .timeline-title {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.3rem;
+    }
+
+    .timeline-time {
+        color: #999;
+        font-size: 0.9rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .action-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    @media (max-width: 768px) {
+        .booking-header-card {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="booking-detail-container">
+    <div class="booking-header-card">
+        <div class="header-left">
+            <h1>Booking #{{ booking.id }}</h1>
+            <p>Created on {{ booking.created_at|date:"M d, Y" }} at {{ booking.created_at|time:"h:i A" }}</p>
+        </div>
+        <span class="booking-status-badge status-{{ booking.status }}">
+            {{ booking.get_status_display }}
+        </span>
+    </div>
+
+    <div class="detail-grid">
+        <div class="detail-card">
+            <h3>🏨 Room Information</h3>
+            <div class="detail-item">
+                <span class="detail-label">Room Number</span>
+                <span class="detail-value">{{ booking.room.room_number }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Room Type</span>
+                <span class="detail-value">{{ booking.room.get_room_type_display }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Capacity</span>
+                <span class="detail-value">{{ booking.room.capacity }} guests</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Floor</span>
+                <span class="detail-value">{{ booking.room.floor|default:"Ground" }}</span>
+            </div>
+        </div>
+
+        <div class="detail-card">
+            <h3>📅 Booking Details</h3>
+            <div class="detail-item">
+                <span class="detail-label">Booking Type</span>
+                <span class="detail-value">{{ booking.get_booking_type_display }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Check-in</span>
+                <span class="detail-value">
+                    {{ booking.start_time|date:"M d, Y" }}<br>
+                    {{ booking.start_time|time:"h:i A" }}
+                </span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Check-out</span>
+                <span class="detail-value">
+                    {{ booking.end_time|date:"M d, Y" }}<br>
+                    {{ booking.end_time|time:"h:i A" }}
+                </span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Duration</span>
+                <span class="detail-value">{{ booking.duration_hours|floatformat:1 }} hours</span>
+            </div>
+        </div>
+
+        <div class="detail-card">
+            <h3>👤 Guest Information</h3>
+            <div class="detail-item">
+                <span class="detail-label">Name</span>
+                <span class="detail-value">{{ booking.guest_name }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Email</span>
+                <span class="detail-value">{{ booking.guest_email }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Phone</span>
+                <span class="detail-value">{{ booking.guest_phone }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Guests</span>
+                <span class="detail-value">{{ booking.number_of_guests }} person(s)</span>
+            </div>
+        </div>
+
+        <div class="detail-card">
+            <h3>💰 Payment Information</h3>
+            <div class="detail-item">
+                <span class="detail-label">Rate</span>
+                <span class="detail-value">
+                    {% if booking.booking_type == 'hourly' %}
+                        ₹{{ booking.room.hourly_rate }}/hour
+                    {% else %}
+                        ₹{{ booking.room.daily_rate }}/day
+                    {% endif %}
+                </span>
+            </div>
+            <div class="detail-item" style="padding-top: 1rem; border-top: 2px solid #f0f0f0; margin-top: 1rem;">
+                <span class="detail-label" style="font-size: 1.1rem;">Total Amount</span>
+                <span class="detail-value" style="font-size: 1.3rem; font-weight: bold; color: #667eea;">
+                    ₹{{ booking.total_price }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    {% if booking.special_requests %}
+    <div class="detail-card" style="margin-bottom: 1.5rem;">
+        <h3>📝 Special Requests</h3>
+        <p style="color: #666; line-height: 1.6;">{{ booking.special_requests }}</p>
+    </div>
+    {% endif %}
+
+    <div class="timeline">
+        <h3>⏱️ Booking Timeline</h3>
+        
+        <div class="timeline-item">
+            <div class="timeline-icon">📝</div>
+            <div class="timeline-content">
+                <div class="timeline-title">Booking Created</div>
+                <div class="timeline-time">{{ booking.created_at|date:"M d, Y" }} at {{ booking.created_at|time:"h:i A" }}</div>
+            </div>
+        </div>
+
+        {% if booking.actual_checkin_time %}
+        <div class="timeline-item">
+            <div class="timeline-icon">✅</div>
+            <div class="timeline-content">
+                <div class="timeline-title">Checked In</div>
+                <div class="timeline-time">{{ booking.actual_checkin_time|date:"M d, Y" }} at {{ booking.actual_checkin_time|time:"h:i A" }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if booking.actual_checkout_time %}
+        <div class="timeline-item">
+            <div class="timeline-icon">🏁</div>
+            <div class="timeline-content">
+                <div class="timeline-title">Checked Out</div>
+                <div class="timeline-time">{{ booking.actual_checkout_time|date:"M d, Y" }} at {{ booking.actual_checkout_time|time:"h:i A" }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if booking.cancelled_at %}
+        <div class="timeline-item">
+            <div class="timeline-icon">❌</div>
+            <div class="timeline-content">
+                <div class="timeline-title">Booking Cancelled</div>
+                <div class="timeline-time">{{ booking.cancelled_at|date:"M d, Y" }} at {{ booking.cancelled_at|time:"h:i A" }}</div>
+                {% if booking.cancellation_reason %}
+                <p style="color: #999; margin-top: 0.5rem;">Reason: {{ booking.cancellation_reason }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="action-card">
+        <h3 style="margin-bottom: 1.5rem;">Available Actions</h3>
+        <div class="action-buttons">
+            {% if booking.status == 'confirmed' %}
+                <form method="POST" action="{% url 'checkin_booking' booking.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">✓ Check-in Now</button>
+                </form>
+            {% endif %}
+
+            {% if booking.status == 'checked_in' %}
+                <form method="POST" action="{% url 'checkout_booking' booking.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">✓ Check-out Now</button>
+                </form>
+            {% endif %}
+
+            {% if booking.status in 'pending,confirmed' %}
+                <form method="POST" action="{% url 'cancel_booking' booking.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger" 
+                            onclick="return confirm('Are you sure you want to cancel this booking?')">
+                        ✗ Cancel Booking
+                    </button>
+                </form>
+            {% endif %}
+
+            <a href="{% url 'my_bookings' %}" class="btn btn-secondary">← Back to Bookings</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

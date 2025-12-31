@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+
+{% block title %}Available Rooms - Hotel Booking{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    .page-header h1 {
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .filter-section {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .filter-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #333;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .filter-control {
+        width: 100%;
+        padding: 0.6rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 0.95rem;
+    }
+
+    .rooms-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+    }
+
+    .room-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+    }
+
+    .room-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+
+    .room-image {
+        width: 100%;
+        height: 200px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+    }
+
+    .room-content {
+        padding: 1.5rem;
+    }
+
+    .room-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+
+    .room-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .room-type {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .room-details {
+        margin-bottom: 1rem;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        color: #666;
+    }
+
+    .room-amenities {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .amenity-tag {
+        background: #f0f0f0;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    .room-pricing {
+        display: flex;
+        justify-content: space-between;
+        padding: 1rem 0;
+        border-top: 2px solid #f0f0f0;
+        border-bottom: 2px solid #f0f0f0;
+        margin-bottom: 1rem;
+    }
+
+    .price-item {
+        text-align: center;
+    }
+
+    .price-label {
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 0.3rem;
+    }
+
+    .price-value {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #667eea;
+    }
+
+    .btn-book {
+        width: 100%;
+        padding: 0.8rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-book:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .empty-state-icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .rooms-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🏨 Available Rooms</h1>
+    <p>Find your perfect room for an amazing stay</p>
+</div>
+
+<div class="filter-section">
+    <form method="GET">
+        <div class="filter-grid">
+            <div class="filter-group">
+                <label>Room Type</label>
+                <select name="room_type" class="filter-control">
+                    <option value="">All Types</option>
+                    <option value="single">Single</option>
+                    <option value="double">Double</option>
+                    <option value="suite">Suite</option>
+                    <option value="deluxe">Deluxe</option>
+                    <option value="presidential">Presidential</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Min Capacity</label>
+                <input type="number" name="min_capacity" class="filter-control" placeholder="Number of guests" min="1">
+            </div>
+
+            <div class="filter-group">
+                <label>Max Hourly Rate</label>
+                <input type="number" name="max_hourly_rate" class="filter-control" placeholder="₹ per hour">
+            </div>
+
+            <div class="filter-group">
+                <label>Max Daily Rate</label>
+                <input type="number" name="max_daily_rate" class="filter-control" placeholder="₹ per day">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Apply Filters</button>
+    </form>
+</div>
+
+{% if rooms %}
+<div class="rooms-grid">
+    {% for room in rooms %}
+    <div class="room-card">
+        <div class="room-image">
+            🏨
+        </div>
+        <div class="room-content">
+            <div class="room-header">
+                <div class="room-number">Room {{ room.room_number }}</div>
+                <div class="room-type">{{ room.get_room_type_display }}</div>
+            </div>
+
+            <div class="room-details">
+                <div class="detail-item">
+                    👥 Capacity: {{ room.capacity }} guests
+                </div>
+                <div class="detail-item">
+                    🏢 Floor: {{ room.floor|default:"Ground" }}
+                </div>
+            </div>
+
+            {% if room.amenities %}
+            <div class="room-amenities">
+                {% for amenity in room.amenities %}
+                <span class="amenity-tag">{{ amenity }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="room-pricing">
+                <div class="price-item">
+                    <div class="price-label">Hourly</div>
+                    <div class="price-value">₹{{ room.hourly_rate }}</div>
+                </div>
+                <div class="price-item">
+                    <div class="price-label">Daily</div>
+                    <div class="price-value">₹{{ room.daily_rate }}</div>
+                </div>
+            </div>
+
+            <a href="{% url 'book_room' room.id %}" class="btn-book">Book Now</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-state-icon">🔍</div>
+    <h2>No Rooms Found</h2>
+    <p>Try adjusting your filters to see more results</p>
+</div>
+{% endif %}
+{% endblock %}
